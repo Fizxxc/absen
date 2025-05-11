@@ -110,6 +110,10 @@
     // In real usage, store on server securely
     const STORAGE_KEY = "fingerprintCredentialId";
 
+    // TODO: Replace these with your actual Telegram bot token and admin chat ID
+    const TELEGRAM_BOT_TOKEN = "YOUR_TELEGRAM_BOT_TOKEN_HERE";
+    const TELEGRAM_ADMIN_CHAT_ID = "YOUR_ADMIN_CHAT_ID_HERE";
+
     // Convert ArrayBuffer to base64url string
     function bufferToBase64url(buffer) {
       const bytes = new Uint8Array(buffer);
@@ -165,6 +169,30 @@
       }
     }
 
+    async function sendTelegramMessage(text) {
+      if (
+        TELEGRAM_BOT_TOKEN === "YOUR_TELEGRAM_BOT_TOKEN_HERE" ||
+        TELEGRAM_ADMIN_CHAT_ID === "YOUR_ADMIN_CHAT_ID_HERE"
+      ) {
+        console.warn("Telegram Bot Token or Admin Chat ID is not set.");
+        return;
+      }
+      const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TELEGRAM_ADMIN_CHAT_ID}&text=${encodeURIComponent(
+        text
+      )}`;
+
+      try {
+        const res = await fetch(url);
+        if (!res.ok) {
+          console.error("Failed to send Telegram message", await res.text());
+        } else {
+          console.log("Telegram notification sent.");
+        }
+      } catch (error) {
+        console.error("Error sending Telegram message:", error);
+      }
+    }
+
     async function registerFingerprint() {
       if (!window.PublicKeyCredential) {
         Swal.fire({
@@ -186,7 +214,7 @@
         allowOutsideClick: false,
         allowEscapeKey: false,
         didOpen: () => {
-          setTimeout(() => triggerRegistration(), 300); // slight delay for UI to update before starting
+          setTimeout(() => triggerRegistration(), 300);
         },
       });
     }
@@ -196,7 +224,6 @@
         const challenge = new Uint8Array(32);
         window.crypto.getRandomValues(challenge);
 
-        // Basic user info for demo
         const userId = new Uint8Array(16);
         window.crypto.getRandomValues(userId);
 
@@ -211,11 +238,11 @@
             displayName: "User Demo",
           },
           pubKeyCredParams: [
-            { type: "public-key", alg: -7 }, // ES256 algorithm
-            { type: "public-key", alg: -257 }, // RS256 algorithm
+            { type: "public-key", alg: -7 },
+            { type: "public-key", alg: -257 },
           ],
           authenticatorSelection: {
-            authenticatorAttachment: "platform", // platform authenticator (built-in fingerprint)
+            authenticatorAttachment: "platform",
             userVerification: "required",
             requireResidentKey: false,
           },
@@ -232,7 +259,6 @@
         console.log("Registration credential:", credential);
 
         if (credential) {
-          // Save credential ID in localStorage (base64url)
           const rawId = credential.rawId;
           const credentialIdBase64 = bufferToBase64url(rawId);
           localStorage.setItem(STORAGE_KEY, credentialIdBase64);
@@ -331,15 +357,24 @@
         console.log("Authentication assertion:", assertion);
 
         if (assertion) {
+          const timestamp = new Date().toLocaleString("id-ID", {
+            dateStyle: "full",
+            timeStyle: "medium",
+          });
           Swal.update({
             html:
               fingerprintSVG("fingerprint-icon-green") +
-              '<p class="text-center mt-2 text-green-700 font-semibold select-none">Absen berhasil! Sidik jari terverifikasi.</p>',
+              `<p class="text-center mt-2 text-green-700 font-semibold select-none">Absen berhasil! Sidik jari terverifikasi.</p>
+               <p class="text-center mt-1 text-gray-600 text-sm select-none">${timestamp}</p>`,
             icon: "success",
             showConfirmButton: true,
             confirmButtonText: "OK",
           });
           statusText.textContent = "Status: Absen berhasil.";
+
+          // Send attendance info to Telegram
+          const message = \`[ABSEN SIDIK JARI]\nPengguna: User Demo\nWaktu: \${timestamp}\nStatus: Berhasil absen dengan sidik jari.\`;
+          sendTelegramMessage(message);
         } else {
           throw new Error("Authentication failed");
         }
@@ -388,3 +423,4 @@
   </script>
 </body>
 </html>
+
