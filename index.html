@@ -24,6 +24,26 @@
       stroke: #dc2626; /* Tailwind red-600 */
       fill: transparent;
     }
+
+    .update-footer {
+    padding: 16px;
+    text-align: center;
+    font-size: 14px;
+    color: #444;
+    box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .update-footer p {
+    margin: 4px 0;
+  }
+
+  /* Responsive enhancement for larger screens */
+  @media (min-width: 600px) {
+    .update-footer {
+      font-size: 16px;
+      padding: 20px;
+    }
+  }
   </style>
 </head>
 <body
@@ -101,6 +121,11 @@
     </p>
   </div>
 
+ <footer class="update-footer">
+  <p id="lastUpdate"></p>
+  <p id="nextUpdate"></p>
+</footer>
+  
   <script>
     const registerBtn = document.getElementById("registerBtn");
     const loginBtn = document.getElementById("loginBtn");
@@ -415,6 +440,21 @@
       statusText.textContent = "Status: Memulai proses absen...";
       loginFingerprint();
     });
+
+     // Konfigurasi hari
+  const lastUpdateDaysAgo = 1;
+  const nextUpdateInDays = 3;
+
+  // Hitung jam
+  const lastUpdateHours = lastUpdateDaysAgo * 24;
+  const nextUpdateHours = nextUpdateInDays * 24;
+
+  // Tampilkan di HTML
+  document.getElementById('lastUpdate').innerText =
+    `🕒 Update terakhir: ${lastUpdateDaysAgo} hari lalu (${lastUpdateHours} jam)`;
+
+  document.getElementById('nextUpdate').innerText =
+    `📅 Update selanjutnya dalam ${nextUpdateInDays} hari (${nextUpdateHours} jam)`;
   </script>
 </body>
 </html>
