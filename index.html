@@ -1,102 +1,64 @@
 <!DOCTYPE html>
-<html lang="id" class="scroll-smooth">
+<html lang="id">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-<title>Web Absen Sidik Jari</title>
-<!-- Tailwind CSS CDN -->
-<script src="https://cdn.tailwindcss.com"></script>
-<!-- SweetAlert2 CDN -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<style>
-  body {
-    font-family: 'Poppins', sans-serif;
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Absen Sidik Jari</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-<body class="bg-gradient-to-b from-blue-400 via-blue-300 to-blue-500 min-h-screen flex items-center justify-center px-4" style="max-width: 350px; margin: auto; height: 100vh;">
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
 
-  <div class="bg-white/90 backdrop-blur-md rounded-xl shadow-lg p-6 w-full max-w-xs">
-    <h1 class="text-3xl font-bold text-center text-blue-700 mb-4 select-none">Absen Sidik Jari</h1>
-    <p class="text-center text-blue-800 mb-6">Tekan tombol di bawah untuk melakukan scan sidik jari dan absen.</p>
-    <div class="flex justify-center">
-      <button id="scanBtn" aria-label="Mulai scan sidik jari" class="group relative bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 focus:outline-none text-white font-semibold py-3 px-6 rounded-lg shadow-md flex items-center space-x-3 transition-all duration-300">
-        <!-- Fingerprint icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 group-hover:animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 11c.667 0 1-.333 1-1V7a5 5 0 00-10 0v3c0 .667.333 1 1 1 .533 0 1-.267 1-1V7a3 3 0 016 0v3c0 .733.467 1 1 1z" />
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 13c-1 0-2 .5-2 2v2h4v-2c0-1.5-1-2-2-2z" />
-          <path stroke-linecap="round" stroke-linejoin="round" d="M7 19v2h10v-2" />
-        </svg>
-        <span>Scan Sidik Jari</span>
-      </button>
-    </div>
-    <p id="status" class="text-center mt-6 text-sm text-gray-700 select-none">Status: Menunggu tindakan.</p>
+  <div class="w-full max-w-sm p-6 bg-white rounded-2xl shadow-lg">
+    <h1 class="text-2xl font-bold text-center text-blue-600 mb-6">Absensi Sidik Jari</h1>
+
+    <input id="nama" type="text" placeholder="Masukkan Nama"
+      class="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+
+    <button onclick="scanSidikJari()"
+      class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none"
+        viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M12 11c0 2.5-.5 5-2.5 6m7.5-6c0 2.5.5 5 2.5 6M15 6a3 3 0 00-6 0v5a3 3 0 006 0V6z" />
+      </svg>
+      Pindai Sidik Jari
+    </button>
   </div>
 
   <script>
-    const scanBtn = document.getElementById('scanBtn');
-    const statusText = document.getElementById('status');
+    function scanSidikJari() {
+      const nama = document.getElementById('nama').value.trim();
 
-    async function simulateFingerprintAuth() {
-      // Check if WebAuthn is available
-      if (!window.PublicKeyCredential) {
+      if (nama === '') {
         Swal.fire({
-          icon: 'error',
-          title: 'Perangkat tidak mendukung WebAuthn',
-          text: 'Maaf, fitur sidik jari tidak didukung di browser ini.',
+          icon: 'warning',
+          title: 'Nama kosong!',
+          text: 'Silakan isi nama terlebih dahulu.',
           confirmButtonColor: '#2563eb'
         });
-        statusText.textContent = 'Status: WebAuthn tidak didukung.';
         return;
       }
 
-      try {
-        statusText.textContent = 'Status: Memulai scan sidik jari...';
+      // Simulasi pemindaian sukses (Anda bisa ganti dengan integrasi hardware/webAuthn di sini)
+      const sukses = Math.random() > 0.2; // 80% kemungkinan sukses
 
-        // Create PublicKeyCredentialRequestOptions for WebAuthn simulation
-        const publicKey = {
-          challenge: new Uint8Array(32),
-          timeout: 60000,
-          userVerification: "required"
-        };
-
-        // Call WebAuthn API for authentication
-        await navigator.credentials.get({ publicKey });
-
-        // On success
+      if (sukses) {
         Swal.fire({
           icon: 'success',
-          title: 'Berhasil Absen!',
-          text: 'Sidik jari terdeteksi, absensi tercatat.',
+          title: 'Absen Berhasil!',
+          text: `Terima kasih, ${nama}. Absensi Anda telah dicatat.`,
           confirmButtonColor: '#2563eb'
         });
-        statusText.textContent = 'Status: Absen berhasil.';
-      } catch (err) {
-        if (err.name === 'NotAllowedError') {
-          Swal.fire({
-            icon: 'warning',
-            title: 'Scan Dibatalkan',
-            text: 'Sidik jari tidak terdeteksi atau dibatalkan oleh pengguna.',
-            confirmButtonColor: '#2563eb'
-          });
-          statusText.textContent = 'Status: Scan dibatalkan.';
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Gagal Scan',
-            text: `Terjadi kesalahan: ${err.message}`,
-            confirmButtonColor: '#2563eb'
-          });
-          statusText.textContent = 'Status: Terjadi kesalahan saat scan.';
-        }
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal!',
+          text: 'Sidik jari tidak dikenali. Coba lagi.',
+          confirmButtonColor: '#ef4444'
+        });
       }
     }
-
-    scanBtn.addEventListener('click', () => {
-      simulateFingerprintAuth();
-    });
   </script>
-
 </body>
 </html>
-
