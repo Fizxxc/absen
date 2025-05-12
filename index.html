@@ -106,13 +106,19 @@
     const loginBtn = document.getElementById("loginBtn");
     const statusText = document.getElementById("status");
 
-    // Save credential info { credentialId, userName } as JSON string in localStorage
-    // In a real app, use backend server to manage user info and credentials
     const STORAGE_KEY = "fingerprintCredential";
 
-    // Replace with your actual Telegram bot token and admin chat ID
     const TELEGRAM_BOT_TOKEN = "7250228481:AAG-C6TQMlIH8g0MZgEocnyNuaKRUaWzpYE";
     const TELEGRAM_ADMIN_CHAT_ID = "6450551010";
+
+    function escapeHtml(unsafe) {
+      return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
 
     function bufferToBase64url(buffer) {
       const bytes = new Uint8Array(buffer);
@@ -151,8 +157,7 @@
         <path d="M12 11c.667 0 1-.333 1-1V7a5 5 0 00-10 0v3c0 .667.333 1 1 1 .533 0 1-.267 1-1V7a3 3 0 016 0v3c0 .733.467 1 1 1z" />
         <path d="M12 13c-1 0-2 .5-2 2v2h4v-2c0-1.5-1-2-2-2z" />
         <path d="M7 19v2h10v-2" />
-      </svg>
-      `;
+      </svg>`;
     }
 
     function updateLoginButtonState() {
@@ -229,7 +234,7 @@
         title: "Silakan scan sidik jari Anda untuk registrasi",
         html:
           fingerprintSVG("fingerprint-icon-gray") +
-          `<p class="text-center mt-2 text-gray-700 select-none">Proses registrasi sidik jari menggunakan sensor bawaan HP untuk: <strong>${Swal.escapeHtml(
+          `<p class="text-center mt-2 text-gray-700 select-none">Proses registrasi sidik jari menggunakan sensor bawaan HP untuk: <strong>${escapeHtml(
             userName
           )}</strong></p>`,
         showConfirmButton: false,
@@ -283,7 +288,6 @@
         if (credential) {
           const rawId = credential.rawId;
           const credentialIdBase64 = bufferToBase64url(rawId);
-          // Save both credential id and username as JSON
           localStorage.setItem(
             STORAGE_KEY,
             JSON.stringify({ credentialId: credentialIdBase64, userName })
@@ -307,7 +311,7 @@
         Swal.update({
           html:
             fingerprintSVG("fingerprint-icon-red") +
-            `<p class="text-center mt-2 text-red-600 select-none">Registrasi gagal: ${Swal.escapeHtml(
+            `<p class="text-center mt-2 text-red-600 select-none">Registrasi gagal: ${escapeHtml(
               err.message
             )}</p>`,
           icon: "error",
@@ -348,7 +352,7 @@
         title: "Silakan scan sidik jari Anda untuk absen",
         html:
           fingerprintSVG("fingerprint-icon-gray") +
-          `<p class="text-center mt-2 text-gray-700 select-none">Proses absen dengan scan sidik jari menggunakan sensor bawaan HP untuk: <strong>${Swal.escapeHtml(
+          `<p class="text-center mt-2 text-gray-700 select-none">Proses absen dengan scan sidik jari menggunakan sensor bawaan HP untuk: <strong>${escapeHtml(
             userName
           )}</strong></p>`,
         showConfirmButton: false,
@@ -423,7 +427,7 @@
           Swal.update({
             html:
               fingerprintSVG("fingerprint-icon-red") +
-              `<p class="text-center mt-2 text-red-600 select-none">Terjadi kesalahan: ${Swal.escapeHtml(
+              `<p class="text-center mt-2 text-red-600 select-none">Terjadi kesalahan: ${escapeHtml(
                 err.message
               )}</p>`,
             icon: "error",
